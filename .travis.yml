@@ -33,6 +33,7 @@ install:
   - bundle config set --local deployment 'true'
   - |
     BUNDLE_WITHOUT=production \
+    BUNDLE_PATH=vendor/cache \
     bundler install --local
 
 before_script:
@@ -56,6 +57,7 @@ before_script:
 
   - |
     CI=true \
+    BUNDLE_PATH=vendor/cache \
     bundle exec rake db:create \
       db:migrate
 
@@ -64,5 +66,6 @@ jobs:
     - stage: Application correctness
       script: |
         CI=true \
+        BUNDLE_PATH=vendor/cache \
           bundle exec rake test
       name: Test suite
