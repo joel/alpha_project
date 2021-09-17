@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+source ./bin/docker-scripts/init-env
+
+./bin/docker-scripts/db-cmd/db-stop
+
+volumes=(
+  ${APP_NAME}-db-data
+)
+
+for volume in "${volumes[@]}"
+do
+  docker volume ls | grep ${volume} 1> /dev/null
+  if [[ $? = 1 ]]; then
+    echo "Volume [${volume}] removed!"
+  else
+    echo "Removing [${volume}]..."
+    docker volume rm ${volume} 1> /dev/null
+  fi
+done

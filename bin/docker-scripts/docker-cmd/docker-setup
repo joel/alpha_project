@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+if [[ ! -f ./bin/docker-scripts/docker-cmd/setup.done ]]; then
+  touch ./bin/docker-scripts/docker-cmd/setup.done
+
+  echo "Please take a moment to verify the values of the desired variables"
+  echo
+  echo "Make sure you editor is configured"
+  echo "export EDITOR=vim"
+  echo
+  echo "open ./bin/docker-scripts/init-env"
+  echo
+
+  exit 1
+fi
+
+source ./bin/docker-scripts/init-env
+
+docker network ls | grep ${APP_NAME}-bridge-docker-network 1> /dev/null
+if [[ $? = 1 ]]; then
+  echo "Creating network [${APP_NAME}-bridge-docker-network]..."
+  docker network create ${APP_NAME}-bridge-docker-network 1> /dev/null
+else
+  echo "Network already exists!"
+fi
+
+volumes=(
+  ${APP_NAME}-db-data
+  ${APP_NAME}-redis-data
+)
+
+for volume in "${volumes[@]}"
+do
+  docker volume ls | grep ${volume} 1> /dev/null
+  if [[ $? = 1 ]]; then
+    echo "Creating [${volume}] volume..."
+    docker volume create ${volume} 1> /dev/null
+  else
+    echo "Volume [${volume}] already exists!"
+  fi
+done

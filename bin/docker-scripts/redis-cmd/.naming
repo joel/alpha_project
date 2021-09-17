@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+container_name=${APP_NAME}-redis
+service_name="Redis"

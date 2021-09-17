@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+function help() {
+  # Display Help
+  echo "Docker scripts help to handle the docker environment of your project"
+  echo
+  echo "./bin/docker-scripts/docker [commands]"
+  echo "commands:"
+  echo "setup      Setup the environment of your project"
+  echo "teardown   Cleanup the environment of your project"
+  echo
+}
+
+if [ $# -eq 0 ]
+  then
+    help
+    exit 1
+fi
+
+CMD="${1}"
+
+POSSIBLE_VALUES=("setup" "teardown")
+
+if [[ ! " ${POSSIBLE_VALUES[@]} " =~ " ${CMD} " ]]; then
+  help
+  exit 1
+fi
+
+case "${CMD}" in
+  'setup')
+    ./bin/docker-scripts/docker-cmd/docker-setup
+  ;;
+  'teardown')
+    ./bin/docker-scripts/docker-cmd/docker-teardown
+  ;;
+esac

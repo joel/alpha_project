@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]
+  then
+    echo "Please provide the Rails Project Path"
+    exit 1
+fi
+
+PF_TARGET="${1}"
+
+# echo "PF_TARGET: [${PF_TARGET}]"
+
+mkdir -p ${PF_TARGET}/bin/docker-scripts
+
+rsync -aqzh --delete ./sources/ ${PF_TARGET}/bin/docker-scripts/
+
+# rsync -avzh --delete --progress ./sources/ ${PF_TARGET}/bin/docker-scripts/
+
+cd ${PF_TARGET}/bin
+
+services=(
+  "docker"
+  "redis-gui"
+  "redis"
+  "db"
+)
+
+for service in "${services[@]}"; do
+  if [[ -f ${service} ]]; then
+    echo "Update Symbolic Link [${service}]..."
+    rm -f ${service} 1> /dev/null
+  else
+    echo "Add Symbolic Link [${service}]..."
+  fi
+  ln -s docker-scripts/bin/${service} . 1> /dev/null
+done
+
+cd - > /dev/null 2>&1
+
+echo "Done!"

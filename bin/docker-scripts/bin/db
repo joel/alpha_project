@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+current_name="$(basename "$(test -L "${0}" && readlink "${0}" || echo "${0}")")"
+
+source "./bin/docker-scripts/${current_name}-cmd/.naming"
+
+function help() {
+  # Display Help
+  echo "${service_name} scripts help to handle the ${service_name} service of your project"
+  echo
+  echo "./bin/docker-scripts/bin/${current_name} [commands]"
+  echo "commands:"
+
+  echo "start [options]  Start ${service_name} service"
+  echo "options:"
+  echo "  --publish      Forward port to the host"
+  echo
+  echo "stop             Stop ${service_name} service"
+  echo "status           Status of ${service_name} service"
+
+  echo
+}
+
+if [ $# -eq 0 ]
+  then
+    help
+    exit 1
+fi
+
+run_cmd="${1}"
+
+possible_options=("start" "stop" "status")
+
+if [[ ! " ${possible_options[@]} " =~ " ${run_cmd} " ]]; then
+  help
+  exit 1
+fi
+
+script_name="./bin/docker-scripts/${current_name}-cmd/${current_name}-${run_cmd}"
+eval ${script_name} ${2}

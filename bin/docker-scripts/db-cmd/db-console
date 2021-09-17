@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+source ./bin/docker-scripts/init-env
+source ./bin/docker-scripts/db-cmd/.naming
+
+docker container ls | grep ${container_name} 1> /dev/null
+if [[ $? = 1 ]]; then
+  message_stopped ${service_name}
+else
+  echo "Opening DB Console"
+  docker exec -it ${container_name} /bin/bash
+fi

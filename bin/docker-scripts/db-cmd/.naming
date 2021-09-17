@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+container_name=${APP_NAME}-db
+service_name="Mysql"

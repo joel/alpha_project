@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+source ./bin/docker-scripts/init-env
+source ./bin/docker-scripts/db-cmd/.naming
+
+./bin/docker-scripts/docker-cmd/docker-check
+if [[ $? = 1 ]]; then
+  exit 1
+fi
+
+if [[ ! -d dumps ]]; then
+  echo "Create dumps directory" && mkdir dumps
+fi
+
+function cmd() {
+
+  array=()
+
+  array+=("docker run --rm --detach")
+  array+=("--name ${container_name}")
+  array+=("--env MYSQL_ROOT_PASSWORD=${DB_PASSWORD}")
+  array+=("--mount source=${container_name}-data,target=/var/lib/mysql")
+  array+=("--mount type=bind,source=$PWD/dumps,target=/dumps")
+  array+=("--network ${APP_NAME}-bridge-docker-network")
+
+  if [[ -n ${1} && ${1} == '--publish' ]]
+  then
+    array+=("--publish ${DB_PUBLISHED_PORT}:3306")
+  fi
+
+  array+=("mysql:${DB_VERSION}")
+
+  CMD=""
+  for line in ${array[@]}; do
+    CMD+="${line} "
+  done
+  CMD=${CMD%?} # remove trailing space
+
+  ${CMD}
+}
+
+if [[ -n ${1} && ${1} == '--publish' ]]
+then
+  echo "Forwarding port [${DB_PUBLISHED_PORT}] to the host"
+fi
+
+docker container ls | grep ${container_name} 1> /dev/null
+if [[ $? = 1 ]]; then
+  message_starting ${service_name}
+  eval cmd $1 > /dev/null 2>&1
+else
+  message_started ${service_name}
+fi
