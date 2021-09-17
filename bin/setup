@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 require 'pathname'
 
+load File.expand_path('../envfile', __FILE__) unless ENV['CI']
+
 # path to your application root.
 APP_ROOT = Pathname.new File.expand_path('../../',  __FILE__)
 
